@@ -2,6 +2,7 @@ import unittest
 
 from css2video.parsers import parse_property
 from css2video.parsers import parse_rule
+from css2video.parsers import parse_stylesheet
 from css2video.parsers import parse_value
 from .utils import isEqual
 
@@ -204,6 +205,65 @@ class TestParser(unittest.TestCase):
 
         for rule, expected_parsed_rule in rule_data:
             parsed_rule = parse_rule(rule)
-            print(parsed_rule)
             self.assertTrue(parsed_rule, expected_parsed_rule)
-        self.assertTrue(False)
+
+    def test_stylesheet(self):
+        stylesheet = '''
+            div{margin-top: 20px;}
+            @keyframes mymove {
+                from {top: 0px;}
+                to {top: 200px;}
+            }
+        '''
+        expected_parsed_stylesheet = {
+            'rules': [
+                {
+                    'type': 'style',
+                    'selector': 'div',
+                    'properties': [
+                        {
+                            'property_name': 'margin-top',
+                            'property_value': {
+                                'type': 'length',
+                                'value': 20,
+                                'unit': 'px'
+                            }
+                        }
+                    ]
+                },
+                {
+                    'type': 'keyframes',
+                    'name': 'mymove',
+                    'keyframes': [
+                        {
+                            'keyframe_selector': 0,
+                            'properties': [
+                                {
+                                    'property_name': 'top',
+                                    'property_value': {
+                                        'type': 'length',
+                                        'value': 0,
+                                        'unit': 'px'
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            'keyframe_selector': 100,
+                            'properties': [
+                                {
+                                    'property_name': 'top',
+                                    'property_value': {
+                                        'type': 'length',
+                                        'value': 200,
+                                        'unit': 'px'
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        parsed_stylesheet = parse_stylesheet(stylesheet)
+        self.assertTrue(isEqual(parsed_stylesheet, expected_parsed_stylesheet))
