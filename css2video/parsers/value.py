@@ -169,7 +169,7 @@ class Text(BaseParser):
         '''Returns a dictionary from the parsed tokens'''
         return {
             'type': 'text',
-            'name': tokens[0]
+            'value': tokens[0]
         }
 
 
