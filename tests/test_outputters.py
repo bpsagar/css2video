@@ -7,7 +7,7 @@ from css2video.outputters import output_value
 
 
 class TestParser(unittest.TestCase):
-    '''Parser tests'''
+    '''Outputters tests'''
 
     def test_value(self):
         '''Tests all types of CSS property values'''
