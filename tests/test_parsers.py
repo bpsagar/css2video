@@ -1,5 +1,6 @@
 import unittest
 
+from css2video.parsers import parse_property
 from css2video.parsers import parse_value
 from .utils import isEqual
 
@@ -85,3 +86,56 @@ class TestParser(unittest.TestCase):
         for value, expected_parsed_value in value_data.items():
             parsed_value = parse_value(value)
             self.assertTrue(isEqual(parsed_value, expected_parsed_value))
+
+    def test_property(self):
+        property_data = [
+            (
+                'background-color: rgba(0, 0, 0, 0.5);',
+                {
+                    'property_name': 'background-color',
+                    'property_value': {
+                        'type': 'color',
+                        'red': 0,
+                        'green': 0,
+                        'blue': 0,
+                        'alpha': 0.5
+                    }
+                }
+            ),
+            (
+                'box-shadow: 0px 0px 4px #000;',
+                {
+                    'property_name': 'box-shadow',
+                    'property_value': {
+                        'type': 'array',
+                        'values': [
+                            {
+                                'type': 'length',
+                                'value': 0,
+                                'unit': 'px'
+                            },
+                            {
+                                'type': 'length',
+                                'value': 0,
+                                'unit': 'px'
+                            },
+                            {
+                                'type': 'length',
+                                'value': 4,
+                                'unit': 'px'
+                            },
+                            {
+                                'type': 'color',
+                                'red': 0,
+                                'green': 0,
+                                'blue': 0,
+                                'alpha': 1
+                            }
+                        ]
+                    }
+                }
+            )
+        ]
+        for property, expected_parsed_property in property_data:
+            parsed_property = parse_property(property)
+            self.assertTrue(parsed_property, expected_parsed_property)
