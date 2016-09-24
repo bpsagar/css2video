@@ -1,6 +1,7 @@
 import unittest
 
 from css2video.parsers import parse_property
+from css2video.parsers import parse_rule
 from css2video.parsers import parse_value
 from .utils import isEqual
 
@@ -139,3 +140,70 @@ class TestParser(unittest.TestCase):
         for property, expected_parsed_property in property_data:
             parsed_property = parse_property(property)
             self.assertTrue(parsed_property, expected_parsed_property)
+
+    def test_rule(self):
+        rule_data = [
+            (
+                'div{margin-top: 20px;}',
+                {
+                    'type': 'style',
+                    'selector': 'div',
+                    'properties': [
+                        {
+                            'property_name': 'margin-top',
+                            'property_value': {
+                                'type': 'length',
+                                'value': 20,
+                                'unit': 'px'
+                            }
+                        }
+                    ]
+                }
+            ),
+            (
+                '''
+                @keyframes mymove {
+                    from {top: 0px;}
+                    to {top: 200px;}
+                }
+                ''',
+                {
+                    'type': 'keyframes',
+                    'name': 'mymove',
+                    'keyframes': [
+                        {
+                            'keyframe_selector': 0,
+                            'properties': [
+                                {
+                                    'property_name': 'top',
+                                    'property_value': {
+                                        'type': 'length',
+                                        'value': 0,
+                                        'unit': 'px'
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            'keyframe_selector': 100,
+                            'properties': [
+                                {
+                                    'property_name': 'top',
+                                    'property_value': {
+                                        'type': 'length',
+                                        'value': 200,
+                                        'unit': 'px'
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            )
+        ]
+
+        for rule, expected_parsed_rule in rule_data:
+            parsed_rule = parse_rule(rule)
+            print(parsed_rule)
+            self.assertTrue(parsed_rule, expected_parsed_rule)
+        self.assertTrue(False)
