@@ -31,6 +31,59 @@ class TestInterpolators(unittest.TestCase):
                     'type': 'color', 'red': 0, 'green': 100, 'blue': 100,
                     'alpha': 0.75
                 },
+            ),
+            (
+                {
+                    'type': 'array',
+                    'values': [
+                        {'type': 'length', 'value': 100, 'unit': 'px'},
+                        {'type': 'number', 'value': 0},
+                    ]
+                },
+                {
+                    'type': 'array',
+                    'values': [
+                        {'type': 'length', 'value': 0, 'unit': 'px'},
+                        {'type': 'number', 'value': 100},
+                    ]
+                },
+                0.5,
+                'linear',
+                {
+                    'type': 'array',
+                    'values': [
+                        {'type': 'length', 'value': 50, 'unit': 'px'},
+                        {'type': 'number', 'value': 50},
+                    ]
+                }
+            ),
+            (
+                {
+                    'type': 'function',
+                    'name': 'translateX',
+                    'args': [
+                        {'type': 'length', 'value': 100, 'unit': 'px'},
+                        {'type': 'number', 'value': 0},
+                    ]
+                },
+                {
+                    'type': 'function',
+                    'name': 'translateX',
+                    'args': [
+                        {'type': 'length', 'value': 0, 'unit': 'px'},
+                        {'type': 'number', 'value': 100},
+                    ]
+                },
+                0.5,
+                'linear',
+                {
+                    'type': 'function',
+                    'name': 'translateX',
+                    'args': [
+                        {'type': 'length', 'value': 50, 'unit': 'px'},
+                        {'type': 'number', 'value': 50},
+                    ]
+                }
             )
         ]
         for v1, v2, f, t, expected_value in data:
