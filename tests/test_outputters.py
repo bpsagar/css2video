@@ -286,4 +286,3 @@ class TestParser(unittest.TestCase):
         for expected_string, stylesheet_dict in stylesheet_data:
             string = output_stylesheet(stylesheet_dict)
             self.assertEqual(string, expected_string)
-
