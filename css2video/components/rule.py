@@ -24,7 +24,9 @@ class StyleRuleComponent(object):
             'animation-timing-function': 'ease'
         }
         for key in properties:
-            properties[key] = self.properties.get(key)
+            if self.properties.get(key):
+                value = self.properties.get(key)
+                properties[key] = value.get('value')
         return properties
 
     def property_list(self):
@@ -69,7 +71,7 @@ class KeyframesRuleComponent(object):
         ]
         self.keyframe_properties.sort(key=lambda x: x.time_offset)
 
-    def get_properties_set(self, time_offset):
+    def get_property_sets(self, time_offset):
         '''Get previous and next properties for a time_offset'''
         set1 = set2 = None
         for kfp in self.keyframe_properties:

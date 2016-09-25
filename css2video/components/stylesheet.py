@@ -16,7 +16,7 @@ class StyleSheetComponent(object):
         keyframes_rules = filter(
             lambda x: x['type'] == 'keyframes', self.Dict.get('rules', []))
         self.keyframes_rules = [
-            KeyframesRuleComponent(rule for rule in keyframes_rules)]
+            KeyframesRuleComponent(rule) for rule in keyframes_rules]
 
     def animation_names(self):
         '''Returns a list of animation names'''
@@ -30,4 +30,4 @@ class StyleSheetComponent(object):
 
     def duplicate(self):
         '''Returns a duplicate copy of the component'''
-        return StyleRuleComponent(copy.deepcopy(self.Dict))
+        return StyleSheetComponent(copy.deepcopy(self.Dict))

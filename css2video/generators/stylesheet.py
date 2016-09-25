@@ -37,11 +37,11 @@ class StyleSheetGenerator(object):
         stylesheet = self.stylesheet.duplicate()
 
         for rule in stylesheet.style_rules:
-            animation_name = rule.properties.get('animation-name')
-            if animation_name is None:
+            animation_properties = rule.animation_properties()
+            animation_name = animation_properties.get('animation-name')
+            if not animation_name:
                 continue
 
-            animation_properties = rule.animation_properties()
             time_offset = self.get_time_offset(animation_properties, time)
             if time_offset is None:
                 continue
