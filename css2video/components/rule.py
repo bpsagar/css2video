@@ -1,10 +1,11 @@
+from .base import BaseComponent
 
-class StyleRuleComponent(object):
-    '''A wrapper for CSS style rule dictionary object'''
 
-    def __init__(self, rule_dict, *args, **kwargs):
+class StyleRuleComponent(BaseComponent):
+    """A wrapper for CSS style rule dictionary object"""
+
+    def __init__(self, *args, **kwargs):
         super(StyleRuleComponent, self).__init__(*args, **kwargs)
-        self.Dict = rule_dict
 
     @property
     def properties(self):
@@ -41,13 +42,15 @@ class StyleRuleComponent(object):
         })
 
 
-class KeyframePropertiesComponent(object):
-    '''A wrapper for CSS keyframe properties inside a keyframes rule'''
+class KeyframePropertiesComponent(BaseComponent):
+    """A wrapper for CSS keyframe properties inside a keyframes rule"""
 
-    def __init__(self, properties_dict, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(KeyframePropertiesComponent, self).__init__(*args, **kwargs)
-        self.Dict = properties_dict
-        self.time_offset = properties_dict['keyframe_selector']
+
+    @property
+    def time_offset(self):
+        return self.Dict.get('keyframe_selector')
 
     @property
     def properties(self):
@@ -58,21 +61,38 @@ class KeyframePropertiesComponent(object):
         }
 
 
-class KeyframesRuleComponent(object):
-    '''A wrapper for CSS keyframes rule dictionary object'''
+class KeyframesRuleComponent(BaseComponent):
+    """A wrapper for CSS keyframes rule dictionary object"""
 
-    def __init__(self, rule_dict, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(KeyframesRuleComponent, self).__init__(*args, **kwargs)
-        self.Dict = rule_dict
-        self.name = rule_dict.get('name')
-        self.keyframe_properties = [
+
+    @property
+    def name(self):
+        """Name of animation"""
+        return self.Dict.get('name')
+
+    @property
+    def keyframe_properties(self):
+        """Keyframe properties of the animation"""
+        keyframe_properties = [
             KeyframePropertiesComponent(k)
             for k in self.Dict.get('keyframes', [])
         ]
-        self.keyframe_properties.sort(key=lambda x: x.time_offset)
+        keyframe_properties.sort(key=lambda x: x.time_offset)
+        return keyframe_properties
 
     def get_property_sets(self, time_offset):
-        '''Get previous and next properties for a time_offset'''
+        """For a given time offset, it returns the keyframe properties
+        before and after this time offset
+
+        Args:
+            - time_offset: time offset in percentage
+
+        Returns:
+            (props_1, props_2) where props_1 are properties before
+            the time offset and props_2 are properties after the time offset
+        """
         set1 = set2 = None
         for kfp in self.keyframe_properties:
             if kfp.time_offset <= time_offset:

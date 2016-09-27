@@ -13,7 +13,7 @@ class StyleSheetGenerator(object):
 
     def __init__(self, stylesheet_dict, *args, **kwargs):
         super(StyleSheetGenerator, self).__init__(*args, **kwargs)
-        self.stylesheet = StyleSheetComponent(stylesheet_dict)
+        self.stylesheet = StyleSheetComponent.from_dict(Dict=stylesheet_dict)
 
     def get_time_offset(self, animation_properties, time):
         '''Returns the time offset in percentage for the set of provided
