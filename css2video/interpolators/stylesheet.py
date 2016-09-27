@@ -1,5 +1,5 @@
 from ..components import StyleSheetComponent
-from ..interpolators import interpolate_value
+from .value import interpolate_value
 
 
 class MissingProperty(Exception):
@@ -8,11 +8,11 @@ class MissingProperty(Exception):
     pass
 
 
-class StyleSheetGenerator(object):
+class StyleSheetInterpolator(object):
     '''Generate stylesheet dictionary object'''
 
     def __init__(self, stylesheet_dict, *args, **kwargs):
-        super(StyleSheetGenerator, self).__init__(*args, **kwargs)
+        super(StyleSheetInterpolator, self).__init__(*args, **kwargs)
         self.stylesheet = StyleSheetComponent.from_dict(Dict=stylesheet_dict)
 
     def get_time_offset(self, animation_properties, time):
@@ -63,3 +63,10 @@ class StyleSheetGenerator(object):
                     type=animation_properties['animation-timing-function'])
                 rule.add_property(name=pname1, value=value)
         return stylesheet
+
+
+def interpolate_stylesheet(stylesheet_dict, time):
+    """Interpolates the animation property value based on the given time and
+    returns the resulting stylesheet as a dictionary"""
+    generator = StyleSheetInterpolator(stylesheet_dict=stylesheet_dict)
+    return generator.generate(time=time).to_dict()
