@@ -8,8 +8,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'pyparsing>=2.1.9',
-        'nose>=1.3.7'
+        'pyparsing==2.2.0',
     ],
     zip_safe=False
 )

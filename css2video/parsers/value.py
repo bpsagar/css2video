@@ -1,26 +1,41 @@
-from .base import BaseParser
 import pyparsing as pp
+
+from css2video.constants import ValueType
+from .base import BaseParser
+
+
+class NumberParseException(Exception):
+    """Raised when there is an exception while parsing a number"""
+    pass
 
 
 class Number(BaseParser):
-    '''Parse a number value that may have a sign, decimal point'''
+    """Parser to parse a number"""
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse the number value'''
+        """Returns the grammar to parse a number that may have a sign and a
+        decimal point"""
         sign = pp.Word('+-', exact=1)
         digits = pp.Word(pp.nums)
         decimal = pp.Combine(pp.Word('.', exact=1) + digits)
-
         return pp.Combine(pp.Optional(sign) + digits + pp.Optional(decimal))
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'number',
+            'type': ValueType.number,
             'value': float(tokens[0])
         }
+
+    @classmethod
+    def parse(cls, string):
+        try:
+            response = super(Number, cls).parse(string)
+        except pp.ParseException:
+            raise NumberParseException()
+        return response
 
 
 class Length(BaseParser):
