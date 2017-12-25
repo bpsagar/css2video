@@ -12,6 +12,8 @@ class NumberParseException(Exception):
 class Number(BaseParser):
     """Parser to parse a number"""
 
+    ParseException = NumberParseException
+
     @classmethod
     def grammar(cls):
         """Returns the grammar to parse a number that may have a sign and a
@@ -29,88 +31,105 @@ class Number(BaseParser):
             'value': float(tokens[0])
         }
 
-    @classmethod
-    def parse(cls, string):
-        try:
-            response = super(Number, cls).parse(string)
-        except pp.ParseException:
-            raise NumberParseException()
-        return response
+
+class LengthParseException(Exception):
+    """Raised when there is an execption while parsing a length"""
+    pass
 
 
 class Length(BaseParser):
-    '''Parse a length value that has a unit attached along with the number'''
+    """Parse a length value that has a unit attached along with the number"""
+
+    ParseException = LengthParseException
 
     UNITS = ['em', 'ex', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'deg']
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse the length value'''
+        """Grammar to parse the length value"""
         number = Number.grammar()
-        units = pp.Literal(cls.UNITS[0])
+        units = pp.CaselessLiteral(cls.UNITS[0])
         for unit in cls.UNITS[1:]:
             units |= pp.Literal(unit)
-
         return number + units.leaveWhitespace()
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'length',
+            'type': ValueType.length,
             'value': float(tokens[0]),
-            'unit': tokens[1]
+            'unit': tokens[1].lower()  # normalizing the units
         }
 
 
+class PercentageParseException(Exception):
+    """Raised when there is an exception while parsing a percentage value"""
+    pass
+
+
 class Percentage(BaseParser):
-    '''Parse a percentage value'''
+    """Parse a percentage value"""
+
+    ParseException = PercentageParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse the percentage value'''
+        """Grammar to parse the percentage value"""
         number = Number.grammar()
         percentage = pp.Literal('%').leaveWhitespace()
-
         return number + percentage
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'percentage',
+            'type': ValueType.percentage,
             'value': float(tokens[0]),
         }
 
 
+class TimeParseException(Exception):
+    """Raised when there is an execption while parsing a time value"""
+    pass
+
+
 class Time(BaseParser):
-    '''Parse a time value which is in seconds'''
+    """Parse a time value which is in seconds"""
+
+    ParseException = TimeParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a time value'''
+        """Grammar to parse a time value"""
         number = Number.grammar()
-        seconds = pp.Literal('s').leaveWhitespace()
-
+        seconds = pp.CaselessLiteral('s').leaveWhitespace()
         return number + seconds
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'time',
+            'type': ValueType.time,
             'value': float(tokens[0])
         }
 
 
+class ColorParseException(Exception):
+    """Raised when there is an exception while parsing a color value"""
+    pass
+
+
 class Color(BaseParser):
-    '''Parse a color value. It can be hex, RGB or RGBA'''
+    """Parse a color value. It can be hex, RGB or RGBA"""
+
+    ParseException = ColorParseException
 
     HEX_CHARS = '0123456789ABCDEFabcdef'
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a color value'''
+        """Grammar to parse a color value"""
         hex3 = (
             pp.Suppress(pp.Literal('#')) +
             pp.Word(cls.HEX_CHARS, exact=3).leaveWhitespace()
@@ -120,7 +139,7 @@ class Color(BaseParser):
             pp.Word(cls.HEX_CHARS, exact=6).leaveWhitespace()
         )
         rgb = (
-            pp.Suppress(pp.Literal('rgb(')) +
+            pp.Suppress(pp.CaselessLiteral('rgb(')) +
             Number.grammar() +
             pp.Suppress(pp.Literal(',')) +
             Number.grammar() +
@@ -129,7 +148,7 @@ class Color(BaseParser):
             pp.Suppress(pp.Literal(')'))
         )
         rgba = (
-            pp.Suppress(pp.Literal('rgba(')) +
+            pp.Suppress(pp.CaselessLiteral('rgba(')) +
             Number.grammar() +
             pp.Suppress(pp.Literal(',')) +
             Number.grammar() +
@@ -139,11 +158,11 @@ class Color(BaseParser):
             Number.grammar() +
             pp.Suppress(pp.Literal(')'))
         )
-        return hex3 | hex6 | rgb | rgba
+        return hex6 | hex3 | rgba | rgb
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         alpha = 1
         if len(tokens) == 1:
             red, green, blue = cls.hex_to_rgb(tokens[0])
@@ -153,7 +172,7 @@ class Color(BaseParser):
             red, green, blue, alpha = map(float, tokens)
 
         return {
-            'type': 'color',
+            'type': ValueType.color,
             'red': red,
             'green': green,
             'blue': blue,
@@ -162,7 +181,7 @@ class Color(BaseParser):
 
     @classmethod
     def hex_to_rgb(cls, hexval):
-        '''Convert hex value to RGB value'''
+        """Convert hex value to RGB value"""
         if len(hexval) == 3:
             new_hexval = ''
             for c in hexval:
@@ -171,19 +190,26 @@ class Color(BaseParser):
         return [int(hexval[i:i + 2], base=16)for i in range(0, 6, 2)]
 
 
+class TextParseException(Exception):
+    """Raised when there is an exception while parsing a text value"""
+    pass
+
+
 class Text(BaseParser):
-    '''Parse a text value'''
+    """Parse a text value"""
+
+    ParseException = TextParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a text value'''
+        """Grammar to parse a text value"""
         return pp.Word(pp.alphas + '-')
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'text',
+            'type': ValueType.text,
             'value': tokens[0]
         }
 

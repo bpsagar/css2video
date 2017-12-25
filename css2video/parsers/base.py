@@ -1,7 +1,14 @@
+import pyparsing as pp
+
 
 class BaseParser(object):
     """
     A base class for all the parsers
+
+    Attributes
+    ----------
+    ParseException : object
+        exception to be raised when there is a parsing error
 
     Methods
     -------
@@ -16,6 +23,8 @@ class BaseParser(object):
         method to parse a string into a dictionary using the grammar and parse
         action
     """
+
+    ParseException = None
 
     @classmethod
     def grammar(cls):
@@ -52,4 +61,7 @@ class BaseParser(object):
         dict :
             dictionary after parsing the string
         """
-        return cls.parser().parseString(string, parseAll=True)[0]
+        try:
+            return cls.parser().parseString(string, parseAll=True)[0]
+        except pp.ParseException:
+            raise cls.ParseException()
