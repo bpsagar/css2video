@@ -214,29 +214,43 @@ class Text(BaseParser):
         }
 
 
+class UrlParseException(Exception):
+    """Raised when there is an exception while parsing an URL value"""
+    pass
+
+
 class Url(BaseParser):
-    '''Parse a URL value which is usually a quoted string'''
+    """Parse a URL value which is usually a quoted string"""
+
+    ParseException = UrlParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a URL value'''
+        """Grammar to parse a URL value"""
         return pp.quotedString
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'url',
+            'type': ValueType.url,
             'value': tokens[0]
         }
 
 
+class FunctionParseException(Exception):
+    """Raised when there is an while parsing a function value"""
+    pass
+
+
 class Function(BaseParser):
-    '''Parse a function value with optional arguments passed'''
+    """Parse a function value with optional arguments passed"""
+
+    ParseException = FunctionParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a function value'''
+        """Grammar to parse a function value"""
         name = pp.Word(pp.alphas)
         args = cls.args_parser()
 
@@ -249,17 +263,17 @@ class Function(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'function',
+            'type': ValueType.function,
             'name': tokens[0],
             'args': tokens[1:]
         }
 
     @classmethod
     def args_parser(cls):
-        '''Returns the arguments of the function which can be a Number, Length,
-        Percentage, Time, Color, Text or URL'''
+        """Returns the arguments of the function which can be a Number, Length,
+        Percentage, Time, Color, Text or URL"""
         arg_types = [Number, Length, Percentage, Time, Color, Text, Url]
         arg_parser = arg_types[0].parser()
         for arg_type in arg_types[1:]:
@@ -267,12 +281,19 @@ class Function(BaseParser):
         return pp.OneOrMore(arg_parser)
 
 
+class ArrayParseException(Exception):
+    """Raised when there is an exception while parsing an array value"""
+    pass
+
+
 class Array(BaseParser):
-    '''Parse an array value. The array item values can be of any type'''
+    """Parse an array value. The array item values can be of any type"""
+
+    ParseException = ArrayParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse an array value'''
+        """Grammar to parse an array value"""
         array_types = [
             Number, Length, Percentage, Time, Color, Text, Url, Function]
         array_parser = array_types[0].parser()
@@ -282,19 +303,19 @@ class Array(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'array',
+            'type': ValueType.array,
             'values': [value for value in tokens]
         }
 
 
 class Value(object):
-    '''Parse any CSS property value'''
+    """Parse any CSS property value"""
 
     @classmethod
     def parser(cls):
-        '''Grammar to parse any CSS Property value'''
+        """Grammar to parse any CSS Property value"""
         return (
             Number.parser() ^
             Length.parser() ^

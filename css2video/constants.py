@@ -9,3 +9,6 @@ class ValueType(object):
     time = 'time'
     color = 'color'
     text = 'text'
+    url = 'url'
+    function = 'function'
+    array = 'array'
