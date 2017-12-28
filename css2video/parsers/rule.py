@@ -1,14 +1,23 @@
+import pyparsing as pp
+
 from .base import BaseParser
 from .property import Property
-import pyparsing as pp
+from css2video.constants import RuleType
+
+
+class StyleParseException(Exception):
+    """Raised when there is an exception while parsing the style rule"""
+    pass
 
 
 class Style(BaseParser):
-    '''Parse a CSS style rule'''
+    """Parse a CSS style rule"""
+
+    ParseException = StyleParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a CSS style rule'''
+        """Grammar to parse a CSS style rule"""
         selector = pp.Word(pp.alphanums + '#.,*>+~[]=|^$:-() ')
         return (
             selector +
@@ -19,9 +28,9 @@ class Style(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'style',
+            'type': RuleType.style,
             'selector': tokens[0].strip(),
             'properties': tokens[1:]
         }

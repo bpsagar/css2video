@@ -12,3 +12,10 @@ class ValueType(object):
     url = 'url'
     function = 'function'
     array = 'array'
+
+
+class RuleType(object):
+    """Class to define constants for rule types"""
+
+    style = 'style'
+    keyframe = 'keyframe'
