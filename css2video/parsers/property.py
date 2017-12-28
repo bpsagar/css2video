@@ -1,14 +1,22 @@
+import pyparsing as pp
+
 from .base import BaseParser
 from .value import Value
-import pyparsing as pp
+
+
+class PropertyParseException(Exception):
+    """Raised when there is an exception while parsing a property"""
+    pass
 
 
 class Property(BaseParser):
-    '''Parse a CSS property'''
+    """Parse a CSS property"""
+
+    ParseException = PropertyParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a CSS property'''
+        """Grammar to parse a CSS property"""
         name = pp.Word(pp.alphas + '-')
         value = Value.parser()
         return (
@@ -20,8 +28,8 @@ class Property(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'property_name': tokens[0],
+            'property_name': tokens[0].lower(),  # Normalize the name
             'property_value': tokens[1]
         }
