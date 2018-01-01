@@ -18,4 +18,4 @@ class RuleType(object):
     """Class to define constants for rule types"""
 
     style = 'style'
-    keyframe = 'keyframe'
+    keyframes = 'keyframes'

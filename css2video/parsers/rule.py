@@ -36,12 +36,22 @@ class Style(BaseParser):
         }
 
 
+class KeyframePropertiesParseException(Exception):
+    """Raised when there is an exception while parsing the keyframe
+    properties"""
+    pass
+
+
 class KeyframeProperties(BaseParser):
-    '''Parse keyframe properties'''
+    """Parse keyframe properties"""
+
+    ParseException = KeyframePropertiesParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse keyframe properties'''
+        """Grammar to parse keyframe properties"""
+        # Todo: Handle keyframe properties where there are more than one
+        # keyframe selectors
         keyframe_selector = (
             (
                 pp.Word(pp.nums + '.') +
@@ -59,23 +69,30 @@ class KeyframeProperties(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         if tokens[0] == 'from':
             tokens[0] = '0'
         elif tokens[0] == 'to':
             tokens[0] = '100'
         return {
-            'keyframe_selector': float(tokens[0]),
+            'selector': float(tokens[0]),
             'properties': tokens[1:]
         }
 
 
+class KeyframesParseException(Exception):
+    """Raised when there is an exception while parsing a keyframes rule"""
+    pass
+
+
 class Keyframes(BaseParser):
-    '''Parse a CSS keyframe rule'''
+    """Parse a CSS keyframe rule"""
+
+    ParseException = KeyframesParseException
 
     @classmethod
     def grammar(cls):
-        '''Grammar to parse a CSS keyframe rule'''
+        """Grammar to parse a CSS keyframe rule"""
         name = pp.Word(pp.alphanums + '_-')
         return (
             pp.Suppress(pp.Literal('@keyframes')) +
@@ -87,20 +104,25 @@ class Keyframes(BaseParser):
 
     @classmethod
     def parse_action(cls, tokens):
-        '''Returns a dictionary from the parsed tokens'''
+        """Returns a dictionary from the parsed tokens"""
         return {
-            'type': 'keyframes',
+            'type': RuleType.keyframes,
             'name': tokens[0],
             'keyframes': tokens[1:]
         }
 
 
+class RuleParseException(Exception):
+    """Raised when there is an exception while parsing a rule"""
+    pass
+
+
 class Rule(object):
-    '''Parse any CSS rule'''
+    """Parse any CSS rule"""
 
     @classmethod
     def parser(cls):
-        '''Grammar to parse any CSS rule'''
+        """Grammar to parse any CSS rule"""
         return (
             Style.parser() ^
             Keyframes.parser()
