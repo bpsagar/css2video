@@ -9,6 +9,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pyparsing==2.2.0',
+        'tqdm==4.19.5'
     ],
     zip_safe=False
 )

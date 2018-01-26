@@ -14,7 +14,7 @@ def _output_keyframe_properties(keyframe_dict):
         '\t%d%% {\n'
         '\t\t%s\n'
         '\t}'
-    ) % (keyframe_dict['keyframe_selector'], properties)
+    ) % (keyframe_dict['selector'], properties)
 
 
 def output_rule(rule_dict):

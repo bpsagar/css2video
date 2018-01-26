@@ -50,7 +50,7 @@ class KeyframePropertiesComponent(BaseComponent):
 
     @property
     def time_offset(self):
-        return self.Dict.get('keyframe_selector')
+        return self.Dict.get('selector')
 
     @property
     def properties(self):

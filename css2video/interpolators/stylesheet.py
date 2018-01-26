@@ -49,10 +49,14 @@ class StyleSheetInterpolator(object):
             keyframes_rule = stylesheet.get_keyframes_rule(animation_name)
             kfp1, kfp2 = keyframes_rule.get_property_sets(
                 time_offset=time_offset)
-            fraction = (
-                (time_offset - kfp1.time_offset) /
-                (kfp2.time_offset - kfp1.time_offset)
-            )
+
+            if kfp2.time_offset == kfp1.time_offset:
+                fraction = 0
+            else:
+                fraction = (
+                    (time_offset - kfp1.time_offset) /
+                    (kfp2.time_offset - kfp1.time_offset)
+                )
 
             for pname1, value1 in kfp1.properties.items():
                 if pname1 not in kfp2.properties:
