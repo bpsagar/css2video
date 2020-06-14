@@ -1,4 +1,5 @@
 import subprocess
+import shlex
 
 from .base import BaseImageRenderer
 
@@ -23,5 +24,5 @@ class CutyCaptRenderer(BaseImageRenderer):
         command = 'cutycapt %s' % args
 
         process = subprocess.Popen(
-            command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()

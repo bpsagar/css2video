@@ -1,4 +1,5 @@
 import subprocess
+import shlex
 
 from .base import BaseVideoRenderer
 
@@ -21,5 +22,5 @@ class FFMpegRenderer(BaseVideoRenderer):
         command = 'ffmpeg %s %s' % (args, self.output_path)
 
         process = subprocess.Popen(
-            command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()
