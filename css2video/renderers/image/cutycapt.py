@@ -1,5 +1,6 @@
 import subprocess
 import shlex
+import time
 
 from .base import BaseImageRenderer
 
@@ -21,8 +22,19 @@ class CutyCaptRenderer(BaseImageRenderer):
         }
         args = ' '.join(
             ['--%s=%s' % (key, value) for key, value in command_args.items()])
-        command = 'cutycapt %s' % args
+        xvfb_command = (
+            'xvfb-run --server-args="-screen 0, {width}x{height}x24"'.format(
+                width=self.width, height=self.height
+            )
+        )
+        command = '{xvfb} cutycapt {args}'.format(args=args, xvfb=xvfb_command)
 
         process = subprocess.Popen(
-            shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process.wait()
+            shlex.split(command),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        okay, errors = process.communicate()
+        # If we run without sleeping, it skips a few frames
+        time.sleep(1)
+
