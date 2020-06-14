@@ -15,7 +15,7 @@ class FFMpegRenderer(BaseVideoRenderer):
 
         command_args = {
             'i': self.image_sequence,
-            'framerate': '%d' % self.framerate
+            'r': '%d' % self.framerate
         }
         args = ' '.join(
             ['-%s %s' % (key, value) for key, value in command_args.items()])
@@ -24,3 +24,4 @@ class FFMpegRenderer(BaseVideoRenderer):
         process = subprocess.Popen(
             shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()
+
