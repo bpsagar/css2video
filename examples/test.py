@@ -15,8 +15,8 @@ render_animation(
     html_path=html_path,
     css_path=css_path,
     output_path=output_path,
-    duration=1,
-    framerate=60,
+    duration=2,
+    framerate=30,
     width=300,
     height=300,
 )
